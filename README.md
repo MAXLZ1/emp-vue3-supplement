@@ -7,6 +7,7 @@
 `emp.config.js`
 ```js
 const withFrameWork = require('@efox/emp-vue3')
+const replaceVueStyleLoader = require('emp-vue3-supplement')
 
 module.exports = {
   compile: [withFrameWork, replaceVueStyleLoader({
@@ -16,5 +17,13 @@ module.exports = {
       },
     }
   })],
+}
+```
+
+* args
+
+```js
+{
+  less: {}
 }
 ```
