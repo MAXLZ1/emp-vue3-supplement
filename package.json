@@ -1,0 +1,27 @@
+{
+  "name": "emp-vue3-supplement",
+  "version": "1.0.0",
+  "description": "EMP vue3的补充配置，以支持.vue文件中使用CSS Module。",
+  "main": "index.js",
+  "author": "MAXLZ1",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint . --ext js --fix"
+  },
+  "dependencies": {
+    "css-loader": "^6.5.1",
+    "less-loader": "^10.2.0",
+    "mini-css-extract-plugin": "^2.4.4",
+    "postcss-loader": "^6.2.0",
+    "vue-style-loader": "^4.1.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/eslint-parser": "^7.16.3",
+    "@commitlint/cli": "^14.1.0",
+    "@commitlint/config-conventional": "^14.1.0",
+    "@provincial-platform/eslint-config-js": "^0.1.6",
+    "eslint": "^7.29.0",
+    "husky": "^7.0.4"
+  }
+}
