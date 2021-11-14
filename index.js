@@ -1,87 +1,78 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-module.exports = ({ less }) => (fn) => (ec) => {
+module.exports = (loaderOptions) => (fn) => (ec) => {
   const { config, env } = ec
   const isDev = env === 'development'
-
-  function getStyleLoader(modules = false, preLoader = {}) {
-    return {
-      [isDev ? 'vue-style-loader' : 'extract-css-loader']: {
-        loader: isDev ? require.resolve('vue-style-loader') : MiniCssExtractPlugin.loader,
-      },
-      'css-loader': {
-        loader: require.resolve('css-loader'),
-        options: {
-          sourceMap: false,
-          importLoaders: 2,
-          modules: modules ? {
-            localIdentName: '[name]_[local]_[hash:base64:5]',
-          } : modules,
-        },
-      },
-      'postcss-loader': {
-        loader: require.resolve('postcss-loader'),
-        options: {
-          postcssOptions: {
-            hideNothingWarning: true,
-          },
-        },
-      },
-      ...preLoader,
-    }
-  }
-
-  const lessLoader = {
-    'less-loader': {
-      loader: require.resolve('less-loader'),
-      options: {
-        lessOptions: {
-          javascriptEnabled: true,
-        },
-        ...less,
-      },
-    },
-  }
 
   // 清除 .css/.less loader
   config.module.rule('css').uses.clear()
   config.module.rule('less').uses.clear()
+  config.module.rule('sass').uses.clear()
 
-  config.merge({
-    module: {
-      rule: {
-        css: {
-          oneOf: {
-            'vue-module': {
-              resourceQuery: /module/,
-              use: {
-                ...getStyleLoader(true),
-              },
-            },
-            normal: {
-              use: {
-                ...getStyleLoader(),
-              },
-            },
+  function createCSSRule(lang, test, loader, options) {
+    const baseRule = config.module.rule(lang).test(test)
+
+    const vueModuleRule = baseRule.oneOf('vue-modules').resourceQuery(/module/)
+    createLoaders(vueModuleRule, true)
+
+    const vueRule = baseRule.oneOf('vue').resourceQuery(/\?vue/)
+    createLoaders(vueRule, true)
+
+    const normalRule = baseRule.oneOf('normal')
+    createLoaders(normalRule)
+
+    function createLoaders(rule, forceCssModule = false) {
+      if (isDev) {
+        rule.use('vue-style-loader').loader(require.resolve('vue-style-loader'))
+      } else {
+        rule.use('extract-css-loader').loader(MiniCssExtractPlugin.loader)
+      }
+
+      rule
+        .use('css-loader')
+        .loader(require.resolve('css-loader'))
+        .options({
+          importLoaders: 2,
+          modules: forceCssModule ? {
+            auto: () => true,
+
+            // localIdentName: '[name]_[local]_[hash:base64:5]',
+            localIdentName: isDev ? '[path][name]-[local]-[hash:base64:5]' : '_[hash:base64:7]',
+          } : forceCssModule,
+        })
+
+      rule
+        .use('postcss-loader')
+        .loader(require.resolve('postcss-loader'))
+        .options({
+          postcssOptions: {
+            hideNothingWarning: true,
           },
-        },
-        less: {
-          oneOf: {
-            'vue-module': {
-              resourceQuery: /module/,
-              use: {
-                ...getStyleLoader(true, lessLoader),
-              },
-            },
-            normal: {
-              use: {
-                ...getStyleLoader(false, lessLoader),
-              },
-            },
-          },
-        },
-      },
+        })
+
+      if (loader) {
+        rule
+          .use(loader)
+          .loader(require.resolve(loader))
+          .options(options)
+      }
+    }
+  }
+
+  createCSSRule('css', /\.css$/)
+  createCSSRule('less', /\.less$/, 'less-loader', {
+    lessOptions: {
+      javascriptEnabled: true,
     },
+    ...loaderOptions.less,
   })
+  createCSSRule('sass', /\.s(a|c)ss$/, 'sass-loader', {
+    sourceMap: env === 'development',
+    ...loaderOptions.sass,
+  })
+  createCSSRule('stylus', /.styl(us)$/, 'stylus-loader', {
+    ...loaderOptions.stylus,
+  })
+
   return fn && fn(ec)
 }
