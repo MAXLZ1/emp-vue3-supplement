@@ -1,8 +1,11 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const envLoad = require('./envLoad')
 
 module.exports = (loaderOptions) => (fn) => (ec) => {
   const { config, env } = ec
   const isDev = env === 'development'
+
+  envLoad(config, env)
 
   // 清除 .css/.less loader
   config.module.rule('css').uses.clear()
@@ -16,7 +19,7 @@ module.exports = (loaderOptions) => (fn) => (ec) => {
     createLoaders(vueModuleRule, true)
 
     const vueRule = baseRule.oneOf('vue').resourceQuery(/\?vue/)
-    createLoaders(vueRule, true)
+    createLoaders(vueRule)
 
     const normalRule = baseRule.oneOf('normal')
     createLoaders(normalRule)
@@ -73,6 +76,16 @@ module.exports = (loaderOptions) => (fn) => (ec) => {
   createCSSRule('stylus', /.styl(us)$/, 'stylus-loader', {
     ...loaderOptions.stylus,
   })
+
+  if (!isDev) {
+    config.plugin('MiniCssExtractPlugin').use(MiniCssExtractPlugin, [
+      {
+        ignoreOrder: true,
+        filename: 'static/css/[name].[contenthash:8].css',
+        chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+      },
+    ])
+  }
 
   return fn && fn(ec)
 }
