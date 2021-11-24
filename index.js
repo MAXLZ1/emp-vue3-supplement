@@ -63,15 +63,15 @@ module.exports = (loaderOptions) => (fn) => (ec) => {
   }
 
   createCSSRule('css', /\.css$/)
-  createCSSRule('less', /\.less$/, 'less-loader', Object.merge({
+  createCSSRule('less', /\.less$/, 'less-loader', Object.assign({
     lessOptions: {
       javascriptEnabled: true,
     },
   }, loaderOptions.less || {}))
-  createCSSRule('sass', /\.s(a|c)ss$/, 'sass-loader', Object.merge({
+  createCSSRule('sass', /\.s(a|c)ss$/, 'sass-loader', Object.assign({
     sourceMap: env === 'development',
   }, loaderOptions.sass || {}))
-  createCSSRule('stylus', /.styl(us)$/, 'stylus-loader', Object.merge(
+  createCSSRule('stylus', /.styl(us)$/, 'stylus-loader', Object.assign(
     {},
     loaderOptions.stylus || {}
   ))

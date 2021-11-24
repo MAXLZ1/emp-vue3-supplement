@@ -3,5 +3,8 @@
   "parserOptions": {
     "requireConfigFile": false
   },
-  "extends": "@provincial-platform/eslint-config-js"
+  "extends": "@provincial-platform/eslint-config-js",
+  "rules": {
+    "prefer-object-spread": 0
+  }
 }

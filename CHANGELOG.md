@@ -1,4 +1,4 @@
-# 1.3.1(2021-11-24)
+# 1.3.2(2021-11-24)
 
 ## Bug Fixes
 修复`loaderOptions`未判断`less`、`sass`、`stylus`选项`undefined`的情况

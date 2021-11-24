@@ -1,7 +1,7 @@
 {
   "name": "emp-vue3-supplement",
-  "version": "1.3.1",
-  "description": "EMP vue3的补充配置，以支持.vue文件中使用CSS Module。",
+  "version": "1.3.2",
+  "description": "EMP vue3的补充配置。",
   "main": "index.js",
   "author": "MAXLZ1",
   "license": "MIT",
