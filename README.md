@@ -3,6 +3,7 @@
 > 对`@efox/emp-vue3`的补充配置
 > 1.支持`.vue`文件中使用 [CSS Module](https://v3.cn.vuejs.org/api/sfc-style.html#style-module)
 > 2.支持`.env.development`、`.env.production`、`.env`文件定义环境变量
+> 3.`svg`的处理：`asset/resource`替代`url-laoder`
 
 ## Use
 

@@ -63,19 +63,18 @@ module.exports = (loaderOptions) => (fn) => (ec) => {
   }
 
   createCSSRule('css', /\.css$/)
-  createCSSRule('less', /\.less$/, 'less-loader', {
+  createCSSRule('less', /\.less$/, 'less-loader', Object.merge({
     lessOptions: {
       javascriptEnabled: true,
     },
-    ...loaderOptions.less,
-  })
-  createCSSRule('sass', /\.s(a|c)ss$/, 'sass-loader', {
+  }, loaderOptions.less || {}))
+  createCSSRule('sass', /\.s(a|c)ss$/, 'sass-loader', Object.merge({
     sourceMap: env === 'development',
-    ...loaderOptions.sass,
-  })
-  createCSSRule('stylus', /.styl(us)$/, 'stylus-loader', {
-    ...loaderOptions.stylus,
-  })
+  }, loaderOptions.sass || {}))
+  createCSSRule('stylus', /.styl(us)$/, 'stylus-loader', Object.merge(
+    {},
+    loaderOptions.stylus || {}
+  ))
 
   if (!isDev) {
     config.plugin('MiniCssExtractPlugin').use(MiniCssExtractPlugin, [
@@ -83,9 +82,15 @@ module.exports = (loaderOptions) => (fn) => (ec) => {
         ignoreOrder: true,
         filename: 'static/css/[name].[contenthash:8].css',
         chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
+
+        // 解决打包错误：Invalid URL
+        experimentalUseImportModule: false,
       },
     ])
   }
+
+  // 使用asset/resource处理svg代替url-loader
+  config.module.rule('svg').set('type', 'asset/resource').uses.clear()
 
   return fn && fn(ec)
 }
